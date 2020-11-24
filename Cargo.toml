@@ -1,0 +1,21 @@
+[package]
+name = "redis-graph"
+version = "0.1.0"
+authors = ["tompro <office@protom.eu>"]
+keywords = ["redis", "database"]
+description = "API for Redis graph database types."
+homepage = "https://github.com/tompro/redis_graph"
+repository = "https://github.com/tompro/redis_graph"
+documentation = "https://docs.rs/redis_graph"
+license = "BSD-3-Clause"
+readme = "README.md"
+edition = "2018"
+exclude = ["docker"]
+
+[dependencies]
+redis = "0.17.0"
+
+[dev-dependencies]
+tokio = { version = "0.2", features = ["full"] }
+futures = "0.3.5"
+async-std = "1.6.0"

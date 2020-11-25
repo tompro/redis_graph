@@ -1,18 +1,51 @@
 use redis::{Value, FromRedisValue, RedisError, RedisResult, from_redis_value};
 use std::collections::HashMap;
 
+/// Contains the result of a Redis graph operation. All types of graph 
+/// operations will return a result in this format. Some (for example 
+/// CREATE) will only return data for selct fields.
 #[derive(Default, Clone, Debug)]
 pub struct GraphResultSet {
+    
+    /// A list of string keys occuring in the RETURN statement of a query.
     pub header: Vec<String>,
+    
+    /// A list of GraphResults with one entry per match of the query.
     pub data: Vec<GraphResult>,
+
+    /// List of metadata returned with the query (eg. affected rows).
     pub metadata: Vec<String>,
 }
 
+/// A graph query can return one or multiple values for every matching entry. 
+/// A GraphResult contains a map of values for a single match. The map keys 
+/// are the query RETURN statements, values can be of any GraphValue type in 
+/// any order.
+/// The impl also contains some helper methods for easier extraction of graph 
+/// values.
+/// 
+/// ```rust
+///use redis_graph::types::GraphResult
+///
+///## "MATCH (person1)-[friend]->(person2) RETURN person1, friend, person2.name"
+///let res = GraphResult::default();
+///
+///let name:Option<String> = res.get_scalar("person2.name");
+///let person = res.get_node("person");
+///let friend_rel = res.get_relation("friend");
+///
+/// ```
+///
 #[derive(Default, Clone, Debug)]
 pub struct GraphResult {
+    /// A map of raw return keys to GraphValues.
     pub data: HashMap<String, GraphValue>,
 }
 
+/// Redis graph values can be one of 3 different types. Scalars are single 
+/// values of any type supported by Redis. Nodes are sort of objects which 
+/// can contain multiple name value pairs and Relations are relations between 
+/// Nodes which themself can contain multiple name value pairs.
 #[derive(Clone, Debug)]
 pub enum GraphValue {
     Scalar(Value),
@@ -20,6 +53,8 @@ pub enum GraphValue {
     Relation(RelationValue),
 }
 
+/// Represents a Redis graph node which is an object like structure with 
+/// potentially multiple named fields.
 #[derive(Default, Clone, Debug)]
 pub struct NodeValue {
     pub id: u64,
@@ -27,6 +62,8 @@ pub struct NodeValue {
     pub properties: HashMap<String, Value>,
 }
 
+/// Represents a Redis graph relation between two nodes. Like a node it can 
+/// potentially contain one or multiple named fields.
 #[derive(Default, Clone, Debug)]
 pub struct RelationValue {
     pub id: u64,
@@ -46,6 +83,88 @@ impl GraphResultSet {
         }
     }
 
+}
+
+/// Represents a group of returned graph values for a single matched result in 
+/// the query. Contains some helper methods for easier extraction of graph values.
+impl GraphResult {
+    
+    /// Returns a single GraphValue by it's key.
+    pub fn get_value(&self, key:&str) -> Option<&GraphValue> {
+        self.data.get(key)
+    }
+    
+    /// Tries to extract a graph Scalar value into target type T. Will return 
+    /// None in case the key does not exist, the target value is not a Scalar 
+    /// or the value could not be parsed into T.
+    pub fn get_scalar<T:FromRedisValue>(&self, key:&str) -> Option<T> {
+        match self.get_value(key) {
+            Some(GraphValue::Scalar(value)) => from_redis_value(value).unwrap_or(None),
+            _ => None,
+        }
+    }
+    
+    /// Tries to extract a graph Node value from Value at key. Will return 
+    /// None in case the key does not exist or the target value is not a  
+    /// Node.
+    pub fn get_node(&self, key:&str) -> Option<&NodeValue> {
+        match self.get_value(key) {
+            Some(GraphValue::Node(value)) => Some(value),
+            _ => None,
+        }
+    }
+
+    /// Tries to extract a graph Relation value from Value at key. Will return 
+    /// None in case the key does not exist or the target value is not a  
+    /// Relation.
+    pub fn get_relation(&self, key:&str) -> Option<&RelationValue> {
+        match self.get_value(key) {
+            Some(GraphValue::Relation(value)) => Some(value),
+            _ => None,
+        }
+    }
+}
+
+/// Enhances object like graph values (Node, Relation) that contain a map of 
+/// properties with extraction function that allow parsing of the inner 
+/// Redis values into requested types.
+pub trait WithProperties {
+    
+    /// Returns a raw Redis value at key.
+    fn get_property_value(&self, key:&str) -> Option<&Value>;
+    
+    /// Extracts a property Redis value at key into an Option of the desired type. Will 
+    /// return None in case the key did not exists. Will return an error in case the 
+    /// value at key failed to be parsed into T.
+    fn get_property<T: FromRedisValue>(&self, key:&str) -> RedisResult<Option<T>> {
+        match self.get_property_value(key) {
+            Some(value) => from_redis_value(value),
+            _ => Ok(None),
+        }
+    }
+    
+    /// Extracts a property Redis value at key into an Option of the desired type. Will 
+    /// return None in case of the key did not exist or the value at key failed to be 
+    /// parsed into T.
+    fn get_property_option<T:FromRedisValue>(&self, key:&str) -> Option<T> {
+        self.get_property(key).unwrap_or(None)
+    }
+
+
+}
+
+/// Allows property extraction on NodeValues.
+impl WithProperties for NodeValue {
+    fn get_property_value(&self, key:&str) -> Option<&Value> {
+        self.properties.get(key)
+    }
+}
+
+/// Allows property extraction on RelationValues.
+impl WithProperties for RelationValue {
+    fn get_property_value(&self, key:&str) -> Option<&Value> {
+        self.properties.get(key)
+    }
 }
 
 impl FromRedisValue for GraphResultSet {

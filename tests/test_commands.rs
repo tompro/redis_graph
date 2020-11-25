@@ -3,11 +3,23 @@ extern crate redis_graph;
 
 use redis::{Commands, Connection, from_redis_value};
 use redis_graph::GraphCommands;
-use redis_graph::GraphResult;
+use redis_graph::GraphValue;
 
 fn get_con() -> Connection {
     let client = redis::Client::open("redis://localhost/").unwrap();
     client.get_connection().expect("Failed to get redis connection!")
+}
+
+fn ensure_test_data(name:&str) {
+    let mut con = get_con();
+    let exists:bool = con.exists(name).unwrap();
+    if !exists {
+        let _ = con.graph_query(name, 
+            "CREATE (:Rider {name:'Valentino Rossi'})-[:rides]->(:Team {name:'Yamaha'}), \
+            (:Rider {name:'Dani Pedrosa'})-[:rides]->(:Team {name:'Honda'}), \
+            (:Rider {name:'Andrea Dovizioso'})-[:rides]->(:Team {name:'Ducati'})"
+        );
+    }
 }
 
 #[test]
@@ -19,6 +31,7 @@ fn test_issue_graph_command() {
     ).unwrap();
     assert!(!r.metadata.is_empty());
 }
+
 
 #[test]
 fn test_match_query_result() {
@@ -39,7 +52,7 @@ fn test_match_query_result() {
     assert_eq!(data.len(), 3);
     
     match data.get(0) {
-        Some(GraphResult::Node(node)) => {
+        Some(GraphValue::Node(node)) => {
             assert_eq!(node.labels, ["person"]);
             let name:String = from_redis_value(node.properties.get("name").unwrap()).unwrap();
             assert_eq!(name, "Pam");
@@ -48,7 +61,7 @@ fn test_match_query_result() {
     }
 
     match data.get(1) {
-        Some(GraphResult::Relation(rel)) => {
+        Some(GraphValue::Relation(rel)) => {
             assert_eq!(rel.rel_type, "works");
             let since:usize = from_redis_value(rel.properties.get("since").unwrap()).unwrap();
             assert_eq!(since, 2010);
@@ -57,7 +70,7 @@ fn test_match_query_result() {
     }
 
     match data.get(2) {
-        Some(GraphResult::Scalar(s)) => {
+        Some(GraphValue::Scalar(s)) => {
             let v:String = from_redis_value(s).unwrap();
             assert_eq!(v, "Dunder Mifflin")
         },
@@ -66,7 +79,18 @@ fn test_match_query_result() {
 
     assert!(!r.metadata.is_empty());
 
-    println!("{:?}", r);
+}
+
+#[test]
+fn test_match_scalar_result() {
+    ensure_test_data("test_match_scalar_result");
+    let res = get_con().graph_query(
+        "test_match_scalar_result", 
+        "MATCH (r:Rider)-[:rides]->(t:Team) WHERE t.name = 'Yamaha' RETURN r.name, t.name"
+    ).unwrap();
+
+    assert_eq!(res.data.len(), 1);
+    assert_eq!(res.data.get(0).unwrap().len(), 2);
 }
 
 

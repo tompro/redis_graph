@@ -4,31 +4,43 @@ use std::collections::HashMap;
 #[derive(Default, Clone, Debug)]
 pub struct GraphResultSet {
     pub header: Vec<String>,
-    pub data: Vec<Vec<GraphResult>>,
+    pub data: Vec<Vec<GraphValue>>,
     pub metadata: Vec<String>,
 }
 
 #[derive(Clone, Debug)]
-pub enum GraphResult {
+pub enum GraphValue {
     Scalar(Value),
-    Node(GraphNode),
-    Relation(GraphRelation),
+    Node(NodeValue),
+    Relation(RelationValue),
 }
 
 #[derive(Default, Clone, Debug)]
-pub struct GraphNode {
+pub struct NodeValue {
     pub id: u64,
     pub labels: Vec<String>,
     pub properties: HashMap<String, Value>,
 }
 
 #[derive(Default, Clone, Debug)]
-pub struct GraphRelation {
+pub struct RelationValue {
     pub id: u64,
     pub rel_type: String,
     pub src_node: u64,
     pub dest_node: u64,
     pub properties: HashMap<String, Value>,
+}
+
+impl GraphResultSet {
+    
+    fn from_metadata(metadata: Vec<String>) -> Self {
+        GraphResultSet { 
+            header: Vec::default(),
+            data: Vec::default(),
+            metadata,
+        }
+    }
+
 }
 
 impl FromRedisValue for GraphResultSet {
@@ -54,9 +66,9 @@ impl FromRedisValue for GraphResultSet {
                     _ => Vec::default(),
                 };
 
-                let data:Vec<Vec<GraphResult>> = match values.get(1) {
+                let data:Vec<Vec<GraphValue>> = match values.get(1) {
                     Some(Value::Bulk(v)) => {
-                        let r:RedisResult<Vec<Vec<GraphResult>>> = v.iter().map(|bulk| {
+                        let r:RedisResult<Vec<Vec<GraphValue>>> = v.iter().map(|bulk| {
                             from_redis_value(bulk)
                         }).collect();
                         r
@@ -78,23 +90,23 @@ impl FromRedisValue for GraphResultSet {
 
 }
 
-impl FromRedisValue for GraphResult {
+impl FromRedisValue for GraphValue {
     fn from_redis_value(v: &Value) -> RedisResult<Self> {
         match v {
             Value::Bulk(ref values) if values.len() == 3 => {
-                let res: GraphNode = from_redis_value(v)?;
-                Ok(GraphResult::Node(res))
+                let res: NodeValue = from_redis_value(v)?;
+                Ok(GraphValue::Node(res))
             },
             Value::Bulk(_) => {
-                let res: GraphRelation = from_redis_value(v)?;
-                Ok(GraphResult::Relation(res))
+                let res: RelationValue = from_redis_value(v)?;
+                Ok(GraphValue::Relation(res))
             },
-            value => Ok(GraphResult::Scalar(value.clone())),
+            value => Ok(GraphValue::Scalar(value.clone())),
         }
     }
 }
 
-impl FromRedisValue for GraphNode {
+impl FromRedisValue for NodeValue {
     fn from_redis_value(v: &Value) -> RedisResult<Self> {
         let values = to_property_map(v)?;
         let id:u64 = values.get("id").map_or(Ok(Some(0)), |v| from_redis_value(v))?.unwrap();
@@ -109,11 +121,11 @@ impl FromRedisValue for GraphNode {
             HashMap::default()
         };
 
-        Ok(GraphNode { id, labels, properties })
+        Ok(NodeValue { id, labels, properties })
     }
 }
 
-impl FromRedisValue for GraphRelation {
+impl FromRedisValue for RelationValue {
     fn from_redis_value(v: &Value) -> RedisResult<Self> {
         let values = to_property_map(v)?;
         let id:u64 = values.get("id").map_or(Ok(Some(0)), |v| from_redis_value(v))?.unwrap();
@@ -126,7 +138,7 @@ impl FromRedisValue for GraphRelation {
             HashMap::new()
         };
         
-        Ok(GraphRelation { id, rel_type, src_node, dest_node, properties })
+        Ok(RelationValue { id, rel_type, src_node, dest_node, properties })
     }
 }
 
@@ -150,14 +162,3 @@ fn to_property_map(v:&Value) -> RedisResult<HashMap<String,Value>> {
     Ok(values)
 }
 
-impl GraphResultSet {
-    
-    fn from_metadata(metadata: Vec<String>) -> Self {
-        GraphResultSet { 
-            header: Vec::default(),
-            data: Vec::default(),
-            metadata,
-        }
-    }
-
-}

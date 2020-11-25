@@ -49,9 +49,9 @@ fn test_match_query_result() {
     assert_eq!(r.header, ["n1", "r", "n2.name"]);
     assert_eq!(r.data.len(), 1);
     let data = r.data.get(0).unwrap();
-    assert_eq!(data.len(), 3);
+    assert_eq!(data.data.len(), 3);
     
-    match data.get(0) {
+    match data.data.get("n1") {
         Some(GraphValue::Node(node)) => {
             assert_eq!(node.labels, ["person"]);
             let name:String = from_redis_value(node.properties.get("name").unwrap()).unwrap();
@@ -60,7 +60,7 @@ fn test_match_query_result() {
         _ => assert!(false),
     }
 
-    match data.get(1) {
+    match data.data.get("r") {
         Some(GraphValue::Relation(rel)) => {
             assert_eq!(rel.rel_type, "works");
             let since:usize = from_redis_value(rel.properties.get("since").unwrap()).unwrap();
@@ -69,7 +69,7 @@ fn test_match_query_result() {
         _ => assert!(false),
     }
 
-    match data.get(2) {
+    match data.data.get("n2.name") {
         Some(GraphValue::Scalar(s)) => {
             let v:String = from_redis_value(s).unwrap();
             assert_eq!(v, "Dunder Mifflin")
@@ -90,7 +90,7 @@ fn test_match_scalar_result() {
     ).unwrap();
 
     assert_eq!(res.data.len(), 1);
-    assert_eq!(res.data.get(0).unwrap().len(), 2);
+    assert_eq!(res.data.get(0).unwrap().data.len(), 2);
 }
 
 

@@ -4,8 +4,13 @@ use std::collections::HashMap;
 #[derive(Default, Clone, Debug)]
 pub struct GraphResultSet {
     pub header: Vec<String>,
-    pub data: Vec<Vec<GraphValue>>,
+    pub data: Vec<GraphResult>,
     pub metadata: Vec<String>,
+}
+
+#[derive(Default, Clone, Debug)]
+pub struct GraphResult {
+    pub data: HashMap<String, GraphValue>,
 }
 
 #[derive(Clone, Debug)]
@@ -66,15 +71,22 @@ impl FromRedisValue for GraphResultSet {
                     _ => Vec::default(),
                 };
 
-                let data:Vec<Vec<GraphValue>> = match values.get(1) {
+                let data:Vec<GraphResult> = match values.get(1) {
                     Some(Value::Bulk(v)) => {
-                        let r:RedisResult<Vec<Vec<GraphValue>>> = v.iter().map(|bulk| {
-                            from_redis_value(bulk)
-                        }).collect();
-                        r
+                        v.iter().map(|bulk| {
+                            let items:Vec<GraphValue> = from_redis_value(bulk)?;
+                            let mut data:HashMap<String,GraphValue> = HashMap::new();
+                            for (idx, name) in header.iter().enumerate() {
+                                match items.get(idx) {
+                                    Some(value) => {data.insert(name.to_string(), value.to_owned());},
+                                    _ => ()
+                                }
+                            }
+                            Ok(GraphResult { data })
+                        }).collect::<RedisResult<Vec<GraphResult>>>()?
                     },
-                    _ => Ok(Vec::default()),
-                }?;
+                    _ => Vec::default(),
+                };
 
 
                 let metadata:Vec<String> = match values.get(2) {

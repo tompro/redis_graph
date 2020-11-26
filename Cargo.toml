@@ -1,6 +1,6 @@
 [package]
 name = "redis-graph"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["tompro <office@protom.eu>"]
 keywords = ["redis", "database", "graph"]
 description = "API for Redis graph database types."

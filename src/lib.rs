@@ -11,14 +11,15 @@
 //! ```ini
 //! [dependencies]
 //! redis = "0.17.0"
-//! redis_graph = "*"
+//! redis-graph = "*"
 //! ```
 //!
 //! Or via git:
 //!
 //! ```ini
-//! [dependencies.redis_graph]
+//! [dependencies.redis-graph]
 //! git = "https://github.com/tompro/redis_graph.git"
+//! branch = "main"
 //! ```
 //!
 //!

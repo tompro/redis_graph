@@ -182,11 +182,8 @@ impl FromRedisValue for GraphResultSet {
                             let items: Vec<GraphValue> = from_redis_value(bulk)?;
                             let mut data: HashMap<String, GraphValue> = HashMap::new();
                             for (idx, name) in header.iter().enumerate() {
-                                match items.get(idx) {
-                                    Some(value) => {
-                                        data.insert(name.to_string(), value.to_owned());
-                                    }
-                                    _ => (),
+                                if let Some(value) = items.get(idx) {
+                                    data.insert(name.to_string(), value.to_owned());
                                 }
                             }
                             Ok(GraphResult { data })

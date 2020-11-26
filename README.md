@@ -68,3 +68,8 @@ let _:GraphResultSet = con.graph_query(
     "CREATE (:Rider {name:'Valentino Rossi'})-[:rides]->(:Team {name:'Yamaha'})"
 ).await?;
 ```
+
+## Other rust Redis graph libraries
+
+[redisgraph-rs](https://github.com/malte-v/redisgraph-rs) is more high level crate 
+for the Redis graph module. At time of writing it did not support async operations. 

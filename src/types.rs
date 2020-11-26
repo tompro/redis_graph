@@ -26,8 +26,6 @@ pub struct GraphResultSet {
 /// 
 /// ```rust
 ///use redis_graph::types::GraphResult
-///
-///## "MATCH (person1)-[friend]->(person2) RETURN person1, friend, person2.name"
 ///let res = GraphResult::default();
 ///
 ///let name:Option<String> = res.get_scalar("person2.name");

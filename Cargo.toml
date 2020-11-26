@@ -2,7 +2,7 @@
 name = "redis-graph"
 version = "0.1.0"
 authors = ["tompro <office@protom.eu>"]
-keywords = ["redis", "database"]
+keywords = ["redis", "database", "graph"]
 description = "API for Redis graph database types."
 homepage = "https://github.com/tompro/redis_graph"
 repository = "https://github.com/tompro/redis_graph"

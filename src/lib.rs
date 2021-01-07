@@ -5,12 +5,12 @@
 //! this crate only adds a single function to the redis commands.
 //! The Graph command is available in a synchronous and asynchronous version.
 //!
-//! The crate is called `redis_graph` and you can depend on it via cargo. You will
+//! The crate is called `redis-graph` and you can depend on it via cargo. You will
 //! also need redis in your dependencies.
 //!
 //! ```ini
 //! [dependencies]
-//! redis = "0.17.0"
+//! redis = "0.19.0"
 //! redis-graph = "*"
 //! ```
 //!
@@ -22,6 +22,14 @@
 //! branch = "main"
 //! ```
 //!
+//! With async feature inherited from the [redis](https://docs.rs/redis)
+//! crate (either: 'async-std-comp' or 'tokio-comp):
+//!
+//! ```ini
+//! [dependencies]
+//! redis = "0.19.0"
+//! redis-graph = { version = "0.2.0", features = ['tokio-comp'] }
+//! ```
 //!
 //! # Synchronous usage
 //!
@@ -55,6 +63,7 @@
 //! to the value extractor traits simply import the whole crate redis_graph::*.
 //!
 //! ```rust,no_run
+//! # #[cfg(any(feature = "tokio-comp", feature = "async-std-comp"))]
 //! # async fn run() -> redis::RedisResult<()> {
 //! use redis::AsyncCommands;
 //! use redis_graph::*;
@@ -123,10 +132,12 @@
 //! let rider_name:Option<String> = rider.unwrap().get_property_option("name");
 //!
 //! # Ok(()) }
+#[cfg(any(feature = "tokio-comp", feature = "async-std-comp"))]
 pub use crate::async_commands::AsyncGraphCommands;
 pub use crate::commands::GraphCommands;
 pub use crate::types::*;
 
+#[cfg(any(feature = "tokio-comp", feature = "async-std-comp"))]
 mod async_commands;
 mod commands;
 mod types;

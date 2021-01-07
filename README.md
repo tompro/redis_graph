@@ -1,21 +1,21 @@
 # redis_graph
 
-[![crates.io](https://img.shields.io/badge/crates.io-v0.1.1-orange)](https://crates.io/crates/redis_graph)
+[![crates.io](https://img.shields.io/badge/crates.io-v0.2.0-orange)](https://crates.io/crates/redis_graph)
 ![Continuous integration](https://github.com/tompro/redis_graph/workflows/Continuous%20integration/badge.svg)
 
-redis_graph proivdes a small trait with an extension function for the
+redis-graph proivdes a small trait with an extension function for the
 [redis](https://docs.rs/redis/) crate to allow working with redis graph 
 data types that can be installed as a [redis module](https://oss.redislabs.com/redisgraph). 
 Redis graph operation are only using a single top level Redis command, so 
 this crate only adds a single function to the redis commands.
 The Graph command is available in a synchronous and asynchronous version.
 
-The crate is called `redis_graph` and you can depend on it via cargo. You will
+The crate is called `redis-graph` and you can depend on it via cargo. You will
 also need redis in your dependencies.
 
 ```ini
 [dependencies]
-redis = "0.17.0"
+redis = "0.19.0"
 redis-graph = "*"
 ```
 
@@ -27,6 +27,13 @@ git = "https://github.com/tompro/redis_graph.git"
 branch = "main"
 ```
 
+With async feature inherited from the [redis](https://docs.rs/redis) crate (either: 'async-std-comp' or 'tokio-comp):
+
+```ini
+[dependencies]
+redis = "0.19.0"
+redis-graph = { version = "0.2.0", features = ['tokio-comp'] }
+```
 
 ## Synchronous usage
 

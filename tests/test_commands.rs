@@ -5,9 +5,9 @@ extern crate redis_graph;
 #[path = "./test_graph_assertions.rs"]
 mod test_graph_assertions;
 
-use std::env;
 use redis::{Commands, Connection};
 use redis_graph::*;
+use std::env;
 use test_graph_assertions::*;
 
 fn get_con() -> Connection {

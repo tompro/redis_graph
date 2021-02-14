@@ -1,10 +1,10 @@
 extern crate redis;
 extern crate redis_graph;
 
-use std::env;
 use redis::aio::Connection;
 use redis::AsyncCommands;
 use redis_graph::*;
+use std::env;
 
 async fn get_con() -> Connection {
     let client = redis::Client::open(get_redis_url()).unwrap();
@@ -77,7 +77,6 @@ pub async fn issue_query_option(name: &str) -> GraphResultSet {
         .await
         .unwrap()
 }
-
 
 fn get_redis_url() -> String {
     let redis_host_key = "REDIS_HOST";

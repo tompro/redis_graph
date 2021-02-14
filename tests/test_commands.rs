@@ -5,12 +5,13 @@ extern crate redis_graph;
 #[path = "./test_graph_assertions.rs"]
 mod test_graph_assertions;
 
+use std::env;
 use redis::{Commands, Connection};
 use redis_graph::*;
 use test_graph_assertions::*;
 
 fn get_con() -> Connection {
-    let client = redis::Client::open("redis://localhost/").unwrap();
+    let client = redis::Client::open(get_redis_url()).unwrap();
     client
         .get_connection()
         .expect("Failed to get redis connection!")
@@ -88,4 +89,21 @@ fn test_unserialize_option() {
         .graph_query("test_unserialize_option", "MATCH (r:Rider) RETURN r.born")
         .unwrap();
     check_unserialize_option(res);
+}
+
+fn get_redis_url() -> String {
+    let redis_host_key = "REDIS_HOST";
+    let redis_host_port = "REDIS_PORT";
+
+    let redis_host = match env::var(redis_host_key) {
+        Ok(host) => host,
+        _ => "localhost".to_string(),
+    };
+
+    let redis_port = match env::var(redis_host_port) {
+        Ok(port) => port,
+        _ => "6379".to_string(),
+    };
+
+    format!("redis://{}:{}/", redis_host, redis_port)
 }

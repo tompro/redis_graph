@@ -1,12 +1,13 @@
 extern crate redis;
 extern crate redis_graph;
 
+use std::env;
 use redis::aio::Connection;
 use redis::AsyncCommands;
 use redis_graph::*;
 
 async fn get_con() -> Connection {
-    let client = redis::Client::open("redis://localhost/").unwrap();
+    let client = redis::Client::open(get_redis_url()).unwrap();
     client.get_async_connection().await.unwrap()
 }
 
@@ -75,4 +76,22 @@ pub async fn issue_query_option(name: &str) -> GraphResultSet {
         .graph_query(name, "MATCH (r:Rider) RETURN r.born")
         .await
         .unwrap()
+}
+
+
+fn get_redis_url() -> String {
+    let redis_host_key = "REDIS_HOST";
+    let redis_host_port = "REDIS_PORT";
+
+    let redis_host = match env::var(redis_host_key) {
+        Ok(host) => host,
+        _ => "localhost".to_string(),
+    };
+
+    let redis_port = match env::var(redis_host_port) {
+        Ok(port) => port,
+        _ => "6379".to_string(),
+    };
+
+    format!("redis://{}:{}/", redis_host, redis_port)
 }

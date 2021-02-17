@@ -48,6 +48,15 @@ pub async fn issue_match_query_command(name: &str) -> GraphResultSet {
         .unwrap()
 }
 
+pub async fn issue_match_ro_query_command(name: &str) -> GraphResultSet {
+    ensure_simple_data(name).await;
+    get_con()
+        .await
+        .graph_ro_query(name, "MATCH (n1)-[r]->(n2) RETURN n1, r, n2.name")
+        .await
+        .unwrap()
+}
+
 pub async fn issue_match_scalar_result(name: &str) -> GraphResultSet {
     ensure_test_data(name).await;
     get_con()

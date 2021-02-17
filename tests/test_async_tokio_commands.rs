@@ -34,6 +34,14 @@ fn test_match_query_result() {
 }
 
 #[test]
+fn test_match_ro_query_result() {
+    let r = create_runtime().block_on(issue_match_ro_query_command(
+        "test_match_ro_query_result_std",
+    ));
+    check_match_query_result(r);
+}
+
+#[test]
 fn test_match_scalar_result() {
     let res = create_runtime().block_on(issue_match_scalar_result("test_match_scalar_result_std"));
     check_match_scalar_result(res);

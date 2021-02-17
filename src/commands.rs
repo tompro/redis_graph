@@ -16,6 +16,11 @@ use redis::{cmd, ConnectionLike, RedisResult, ToRedisArgs};
 ///     "my_graph",
 ///     "CREATE (:Rider {name:'Valentino Rossi'})-[:rides]->(:Team {name:'Yamaha'})"
 /// )?;
+///
+/// let res_read_only:GraphResultSet = con.graph_ro_query(
+///     "my_graph",
+///     "MATCH (rider:Rider)-[:rides]->(:Team {name:'Yamaha'}) RETURN rider"
+/// )?;
 /// # Ok(()) }
 /// ```
 ///
@@ -26,6 +31,13 @@ pub trait GraphCommands: ConnectionLike + Sized {
         query: Q,
     ) -> RedisResult<GraphResultSet> {
         cmd("GRAPH.QUERY").arg(key).arg(query).query(self)
+    }
+    fn graph_ro_query<K: ToRedisArgs, Q: ToRedisArgs>(
+        &mut self,
+        key: K,
+        query: Q,
+    ) -> RedisResult<GraphResultSet> {
+        cmd("GRAPH.RO_QUERY").arg(key).arg(query).query(self)
     }
 }
 

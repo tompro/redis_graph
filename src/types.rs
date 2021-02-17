@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 /// Contains the result of a Redis graph operation. All types of graph
 /// operations will return a result in this format. Some (for example
-/// CREATE) will only return data for selct fields.
+/// CREATE) will only return data for select fields.
 #[derive(Default, Clone, Debug)]
 pub struct GraphResultSet {
     /// A list of string keys occuring in the RETURN statement of a query.

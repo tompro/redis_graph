@@ -62,6 +62,20 @@ fn test_match_query_result() {
 }
 
 #[test]
+fn test_match_ro_query_result() {
+    ensure_simple_data("test_match_ro_query_result");
+
+    let r = get_con()
+        .graph_ro_query(
+            "test_match_ro_query_result",
+            "MATCH (n1)-[r]->(n2) RETURN n1, r, n2.name",
+        )
+        .unwrap();
+
+    check_match_query_result(r);
+}
+
+#[test]
 fn test_match_scalar_result() {
     ensure_test_data("test_match_scalar_result");
     let res = get_con()

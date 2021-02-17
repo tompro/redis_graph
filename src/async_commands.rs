@@ -17,6 +17,11 @@ use redis::{cmd, RedisFuture, ToRedisArgs};
 ///     "my_graph",
 ///     "CREATE (:Rider {name:'Valentino Rossi'})-[:rides]->(:Team {name:'Yamaha'})"
 /// ).await?;
+///
+/// let res_read_only:GraphResultSet = con.graph_ro_query(
+///     "my_graph",
+///     "MATCH (rider:Rider)-[:rides]->(:Team {name:'Yamaha'}) RETURN rider"
+/// ).await?;
 /// # Ok(()) }
 /// ```
 ///
@@ -28,6 +33,19 @@ pub trait AsyncGraphCommands: ConnectionLike + Send + Sized {
     ) -> RedisFuture<GraphResultSet> {
         Box::pin(async move {
             cmd("GRAPH.QUERY")
+                .arg(key)
+                .arg(query)
+                .query_async(self)
+                .await
+        })
+    }
+    fn graph_ro_query<'a, K: ToRedisArgs + Send + Sync + 'a, Q: ToRedisArgs + Send + Sync + 'a>(
+        &'a mut self,
+        key: K,
+        query: Q,
+    ) -> RedisFuture<GraphResultSet> {
+        Box::pin(async move {
+            cmd("GRAPH.RO_QUERY")
                 .arg(key)
                 .arg(query)
                 .query_async(self)

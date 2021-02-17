@@ -1,9 +1,10 @@
-//! redis_graph proivdes a small trait with an extension function for the
+//! redis_graph provides a small trait with two extension functions for the
 //! [redis](https://docs.rs/redis/) crate to allow working with redis graph
 //! data types that can be installed as a [redis module](https://oss.redislabs.com/redisgraph).
-//! Redis graph operation are only using a single top level Redis command, so
-//! this crate only adds a single function to the redis commands.
-//! The Graph command is available in a synchronous and asynchronous version.
+//! Redis graph operation are only using two top level Redis commands
+//! (one for read/write operations and one for read-only operations), so
+//! this crate only adds two functions to the redis commands.
+//! The Graph commands are available in synchronous and asynchronous versions.
 //!
 //! The crate is called `redis-graph` and you can depend on it via cargo. You will
 //! also need redis in your dependencies.
@@ -33,9 +34,9 @@
 //!
 //! # Synchronous usage
 //!
-//! To enable the redis graph command you simply load the trait
+//! To enable the redis graph commands you simply load the trait
 //! redis_graph::GraphCommands into scope. The redis graph
-//! command will then be available on your redis connection.
+//! commands will then be available on your redis connection.
 //! To also have access to the value extractor traits simply import
 //! the whole crate redis_graph::*.
 //!
@@ -52,13 +53,18 @@
 //!     "my_graph",
 //!     "CREATE (:Rider {name:'Valentino Rossi'})-[:rides]->(:Team {name:'Yamaha'})"
 //! )?;
+//!
+//! let _:GraphResultSet = con.graph_ro_query(
+//!     "my_graph",
+//!     "MATCH (rider:Rider)-[:rides]->(:Team {name:'Yamaha'}) RETURN rider"
+//! )?;
 //! # Ok(()) }
 //! ```
 //!
 //!
 //! # Asynchronous usage
 //!
-//! To enable the redis graph async command you simply load the
+//! To enable the redis graph async commands you simply load the
 //! redis_graph::AsyncGraphCommands into the scope. To also have access
 //! to the value extractor traits simply import the whole crate redis_graph::*.
 //!
@@ -75,6 +81,11 @@
 //!     "my_graph",
 //!     "CREATE (:Rider {name:'Valentino Rossi'})-[:rides]->(:Team {name:'Yamaha'})"
 //! ).await?;
+//!
+//! let _:GraphResultSet = con.graph_ro_query(
+//!     "my_graph",
+//!     "MATCH (rider:Rider)-[:rides]->(:Team {name:'Yamaha'}) RETURN rider"
+//! ).await?;
 //! # Ok(()) }
 //! ```
 //!
@@ -84,11 +95,11 @@
 //! simplicity all examples will use the synchronous API. To use them async simply
 //! run them within an async function and append the .await after the command call.
 //!
-//! ## GRAPH.QUERY
-//! The query command is the only command required for all graph operations. It will
-//! produce a GraphResultSet that contains the results of the operation. As queries
-//! are very flexible a lot of different data stuctures can be contained in a
-//! GraphResultSet.
+//! ## GRAPH.QUERY and GRAPH.RO_QUERY
+//! The query command (and read-only alternative) is the only command required for
+//! all graph operations. It will produce a GraphResultSet that contains the
+//! results of the operation. As queries are very flexible a lot of different
+//! data stuctures can be contained in a GraphResultSet.
 //!
 //! ```rust,no_run
 //! # fn run() -> redis::RedisResult<()> {
@@ -106,8 +117,8 @@
 //! assert!(!r.metadata.is_empty());
 //!
 //!
-//! /// This query will return nodes and scalars in the result
-//! let riders = con.graph_query(
+//! /// This read-only query will return nodes and scalars in the result
+//! let riders = con.graph_ro_query(
 //!     "my_graph",
 //!     "MATCH (rider:Rider)-[:rides]->(team:Team)
 //!        WHERE team.name = 'Yamaha'

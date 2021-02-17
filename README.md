@@ -3,12 +3,13 @@
 [![crates.io](https://img.shields.io/badge/crates.io-v0.2.0-orange)](https://crates.io/crates/redis_graph)
 ![Continuous integration](https://github.com/tompro/redis_graph/workflows/Continuous%20integration/badge.svg)
 
-redis-graph proivdes a small trait with an extension function for the
+redis-graph provides a small trait with an extension function for the
 [redis](https://docs.rs/redis/) crate to allow working with redis graph 
 data types that can be installed as a [redis module](https://oss.redislabs.com/redisgraph). 
-Redis graph operation are only using a single top level Redis command, so 
-this crate only adds a single function to the redis commands.
-The Graph command is available in a synchronous and asynchronous version.
+Redis graph operation are only using two top level Redis commands
+(one for read/write operations and one for read-only operations), so
+this crate only adds two functions to the redis commands.
+The Graph commands are available in synchronous and asynchronous versions.
 
 The crate is called `redis-graph` and you can depend on it via cargo. You will
 also need redis in your dependencies.
@@ -37,9 +38,9 @@ redis-graph = { version = "0.2.0", features = ['tokio-comp'] }
 
 ## Synchronous usage
 
-To enable the redis graph command you simply load the trait
+To enable the redis graph commands you simply load the trait
 redis_graph::GraphCommands into scope. The redis graph
-command will then be available on your redis connection.
+commands will then be available on your redis connection.
 To also have access to the value extractor traits simply import 
 the whole crate redis_graph::*.
 
@@ -55,12 +56,17 @@ let _:GraphResultSet = con.graph_query(
     "my_graph", 
     "CREATE (:Rider {name:'Valentino Rossi'})-[:rides]->(:Team {name:'Yamaha'})"
 )?;
+
+let _:GraphResultSet = con.graph_ro_query(
+    "my_graph",
+    "MATCH (rider:Rider)-[:rides]->(:Team {name:'Yamaha'}) RETURN rider"
+)?;
 ```
 
 
 ## Asynchronous usage
 
-To enable the redis graph async command you simply load the
+To enable the redis graph async commands you simply load the
 redis_graph::AsyncGraphCommands into the scope. To also have access 
 to the value extractor traits simply import the whole crate redis_graph::*.
 
@@ -74,6 +80,11 @@ let mut con = client.get_async_connection().await?;
 let _:GraphResultSet = con.graph_query(
     "my_graph", 
     "CREATE (:Rider {name:'Valentino Rossi'})-[:rides]->(:Team {name:'Yamaha'})"
+).await?;
+
+let _:GraphResultSet = con.graph_ro_query(
+    "my_graph", 
+    "MATCH (rider:Rider)-[:rides]->(:Team {name:'Yamaha'}) RETURN rider"
 ).await?;
 ```
 

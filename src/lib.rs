@@ -29,7 +29,7 @@
 //! ```ini
 //! [dependencies]
 //! redis = "0.19.0"
-//! redis-graph = { version = "0.2.0", features = ['tokio-comp'] }
+//! redis-graph = { version = "0.3.0", features = ['tokio-comp'] }
 //! ```
 //!
 //! # Synchronous usage

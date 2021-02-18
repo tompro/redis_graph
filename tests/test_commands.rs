@@ -105,6 +105,42 @@ fn test_unserialize_option() {
     check_unserialize_option(res);
 }
 
+#[test]
+fn test_graph_profile() {
+    ensure_test_data("test_graph_profile");
+    let res: Vec<String> = get_con()
+        .graph_profile("test_graph_profile", "MATCH (r:Rider) RETURN r")
+        .unwrap();
+    check_graph_profile(res);
+}
+
+#[test]
+fn test_graph_slowlog() {
+    ensure_test_data("test_graph_slowlog");
+    let res = get_con().graph_slowlog("test_graph_slowlog").unwrap();
+    check_graph_slowlog(res);
+}
+
+#[test]
+fn test_graph_config_set() {
+    let err_res = get_con().graph_config_set("SOME", 1000);
+    check_graph_config_set_invalid(err_res);
+    let res = get_con().graph_config_set("RESULTSET_SIZE", 500);
+    check_graph_config_set_valid(res);
+}
+
+#[test]
+fn test_graph_config_get() {
+    let _ = get_con().graph_config_set("RESULTSET_SIZE", 500).unwrap();
+    check_graph_config_get(get_con().graph_config_get("RESULTSET_SIZE"));
+}
+
+#[test]
+fn test_graph_config_get_all() {
+    let _ = get_con().graph_config_set("RESULTSET_SIZE", 500).unwrap();
+    check_graph_config_get_all(get_con().graph_config_get_all().unwrap());
+}
+
 fn get_redis_url() -> String {
     let redis_host_key = "REDIS_HOST";
     let redis_host_port = "REDIS_PORT";

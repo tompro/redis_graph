@@ -53,3 +53,39 @@ fn test_unserialize_option() {
     let res = task::block_on(issue_query_option("test_unserialize_option_std"));
     check_unserialize_option(res);
 }
+
+#[test]
+fn test_graph_profile() {
+    let res = task::block_on(issue_graph_profile_query("test_graph_profile_std"));
+    check_graph_profile(res);
+}
+
+#[test]
+fn test_graph_slowlog() {
+    let res = task::block_on(issue_graph_slowlog_query("test_graph_slowlog_std"));
+    check_graph_slowlog(res);
+}
+
+#[test]
+fn test_graph_config_set_invalid() {
+    let err_res = task::block_on(issue_graph_config_set_invalid());
+    check_graph_config_set_invalid(err_res);
+}
+
+#[test]
+fn test_graph_config_set() {
+    let res = task::block_on(issue_graph_config_set());
+    check_graph_config_set_valid(res);
+}
+
+#[test]
+fn test_graph_config_get() {
+    let res = task::block_on(issue_graph_config_get());
+    check_graph_config_get(res);
+}
+
+#[test]
+fn test_graph_config_get_all() {
+    let res = task::block_on(issue_graph_config_get_all());
+    check_graph_config_get_all(res);
+}

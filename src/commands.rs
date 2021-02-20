@@ -1,5 +1,5 @@
 use crate::types::*;
-use redis::{cmd, ConnectionLike, RedisResult, ToRedisArgs};
+use redis::{cmd, ConnectionLike, FromRedisValue, RedisResult, ToRedisArgs};
 
 /// Provides a high level synchronous API to work with Redis graph data types.
 /// The graph command becomes directly available on ConnectionLike types from
@@ -32,12 +32,57 @@ pub trait GraphCommands: ConnectionLike + Sized {
     ) -> RedisResult<GraphResultSet> {
         cmd("GRAPH.QUERY").arg(key).arg(query).query(self)
     }
+
     fn graph_ro_query<K: ToRedisArgs, Q: ToRedisArgs>(
         &mut self,
         key: K,
         query: Q,
     ) -> RedisResult<GraphResultSet> {
         cmd("GRAPH.RO_QUERY").arg(key).arg(query).query(self)
+    }
+
+    fn graph_profile<K: ToRedisArgs, Q: ToRedisArgs, RV: FromRedisValue>(
+        &mut self,
+        key: K,
+        query: Q,
+    ) -> RedisResult<RV> {
+        cmd("GRAPH.PROFILE").arg(key).arg(query).query(self)
+    }
+
+    fn graph_delete<K: ToRedisArgs>(&mut self, key: K) -> RedisResult<String> {
+        cmd("GRAPH.DELETE").arg(key).query(self)
+    }
+
+    fn graph_explain<K: ToRedisArgs, Q: ToRedisArgs, RV: FromRedisValue>(
+        &mut self,
+        key: K,
+        query: Q,
+    ) -> RedisResult<RV> {
+        cmd("GRAPH.EXPLAIN").arg(key).arg(query).query(self)
+    }
+
+    fn graph_slowlog<K: ToRedisArgs>(&mut self, key: K) -> RedisResult<Vec<SlowLogEntry>> {
+        cmd("GRAPH.SLOWLOG").arg(key).query(self)
+    }
+
+    fn graph_config_set<K: ToRedisArgs, V: ToRedisArgs>(
+        &mut self,
+        name: K,
+        value: V,
+    ) -> RedisResult<bool> {
+        cmd("GRAPH.CONFIG")
+            .arg("SET")
+            .arg(name)
+            .arg(value)
+            .query(self)
+    }
+
+    fn graph_config_get<K: ToRedisArgs, RV: FromRedisValue>(&mut self, name: K) -> RedisResult<RV> {
+        value_from_pair(&cmd("GRAPH.CONFIG").arg("GET").arg(name).query(self)?)
+    }
+
+    fn graph_config_get_all(&mut self) -> RedisResult<GraphConfig> {
+        cmd("GRAPH.CONFIG").arg("GET").arg("*").query(self)
     }
 }
 

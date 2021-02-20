@@ -70,6 +70,38 @@ pub struct RelationValue {
     pub properties: HashMap<String, Value>,
 }
 
+/// Represents an entry returned from the GRAPH.SLOWLOG command.
+#[derive(Default, Clone, Debug)]
+pub struct SlowLogEntry {
+    /// A unix timestamp at which the log entry was processed.
+    pub timestamp: u64,
+    /// The issued command.
+    pub command: String,
+    /// The issued query.
+    pub query: String,
+    /// The amount of time needed for its execution, in milliseconds.
+    pub time: f64,
+}
+
+/// Simple wrapper around a graph config map that allows derserializing config
+/// values into rust types.
+#[derive(Default, Clone, Debug)]
+pub struct GraphConfig {
+    pub values: HashMap<String, Value>,
+}
+
+impl GraphConfig {
+    /// Extracts a config Redis value at key into an Option of the desired type. Will
+    /// return None in case the key did not exists. Will return an error in case the
+    /// value at key failed to be parsed into T.
+    pub fn get_value<T: FromRedisValue>(&self, key: &str) -> RedisResult<Option<T>> {
+        match self.values.get(key) {
+            Some(value) => from_redis_value(value),
+            _ => Ok(None),
+        }
+    }
+}
+
 impl GraphResultSet {
     fn from_metadata(metadata: Vec<String>) -> Self {
         GraphResultSet {
@@ -285,8 +317,30 @@ impl FromRedisValue for RelationValue {
     }
 }
 
+impl FromRedisValue for SlowLogEntry {
+    fn from_redis_value(v: &Value) -> RedisResult<Self> {
+        match v {
+            Value::Bulk(ref values) if values.len() == 4 => Ok(SlowLogEntry {
+                timestamp: from_redis_value(values.get(0).unwrap())?,
+                command: from_redis_value(values.get(1).unwrap())?,
+                query: from_redis_value(values.get(2).unwrap())?,
+                time: from_redis_value(values.get(3).unwrap())?,
+            }),
+            _ => Err(create_error("invalid_slow_log_entry")),
+        }
+    }
+}
+
+impl FromRedisValue for GraphConfig {
+    fn from_redis_value(v: &Value) -> RedisResult<Self> {
+        Ok(GraphConfig {
+            values: to_property_map(v)?,
+        })
+    }
+}
+
 // Wraps a string error msg into a RedisError
-fn create_error(msg: &str) -> RedisError {
+pub fn create_error(msg: &str) -> RedisError {
     RedisError::from(std::io::Error::new(
         std::io::ErrorKind::Other,
         msg.to_string(),
@@ -294,7 +348,7 @@ fn create_error(msg: &str) -> RedisError {
 }
 
 // Extracts a list of name value pairs from a graph result
-fn to_property_map(v: &Value) -> RedisResult<HashMap<String, Value>> {
+pub fn to_property_map(v: &Value) -> RedisResult<HashMap<String, Value>> {
     let t: Vec<HashMap<String, Value>> = from_redis_value(v)?;
     let mut values: HashMap<String, Value> = HashMap::default();
     for pair in t {
@@ -303,4 +357,9 @@ fn to_property_map(v: &Value) -> RedisResult<HashMap<String, Value>> {
         }
     }
     Ok(values)
+}
+
+pub fn value_from_pair<T: FromRedisValue>(v: &Value) -> RedisResult<T> {
+    let r: (String, T) = from_redis_value(v)?;
+    Ok(r.1)
 }

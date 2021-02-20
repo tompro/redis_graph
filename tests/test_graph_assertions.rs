@@ -1,4 +1,4 @@
-use redis::from_redis_value;
+use redis::{from_redis_value, RedisResult};
 use redis_graph::*;
 
 pub fn check_graph_create_command(r: GraphResultSet) {
@@ -72,4 +72,40 @@ pub fn check_unserialize_option(res: GraphResultSet) {
     let born: Vec<Option<usize>> = res.data.iter().map(|v| v.get_scalar("r.born")).collect();
     assert_eq!(born.iter().filter(|v| v.is_none()).count(), 1);
     assert_eq!(born.iter().filter(|v| v.is_some()).count(), 2);
+}
+
+pub fn check_graph_profile(res: Vec<String>) {
+    assert!(res.len() > 0);
+}
+
+pub fn check_graph_slowlog(res: Vec<SlowLogEntry>) {
+    let first = res.first().unwrap();
+    assert_eq!(first.command, "GRAPH.QUERY");
+    assert!(res.len() > 0);
+}
+
+pub fn check_graph_config_set_valid(r: RedisResult<bool>) {
+    assert!(r.unwrap());
+}
+
+pub fn check_graph_config_set_invalid(r: RedisResult<bool>) {
+    assert_eq!(true, r.is_err());
+}
+
+pub fn check_graph_config_get(r: RedisResult<i32>) {
+    assert_eq!(r.unwrap(), 500);
+}
+
+pub fn check_graph_config_get_all(r: GraphConfig) {
+    assert!(!r.values.is_empty());
+    let v: i32 = r.get_value("RESULTSET_SIZE").unwrap().unwrap();
+    assert_eq!(v, 500);
+}
+
+pub fn check_graph_delete_success(r: RedisResult<String>) {
+    assert!(r.unwrap().contains("Graph removed"))
+}
+
+pub fn check_graph_explain_result(r: RedisResult<Vec<String>>) {
+    assert!(r.unwrap().len() > 0);
 }

@@ -150,6 +150,21 @@ pub async fn issue_graph_config_get_all() -> GraphConfig {
 }
 
 #[cfg(any(feature = "tokio-comp", feature = "async-std-comp"))]
+pub async fn issue_graph_delete(name: &str) -> RedisResult<String> {
+    ensure_test_data(name).await;
+    get_con().await.graph_delete(name).await
+}
+
+#[cfg(any(feature = "tokio-comp", feature = "async-std-comp"))]
+pub async fn issue_graph_explain(name: &str) -> RedisResult<Vec<String>> {
+    ensure_test_data(name).await;
+    get_con()
+        .await
+        .graph_explain(name, "MATCH (r:Rider) RETURN r")
+        .await
+}
+
+#[cfg(any(feature = "tokio-comp", feature = "async-std-comp"))]
 fn get_redis_url() -> String {
     let redis_host_key = "REDIS_HOST";
     let redis_host_port = "REDIS_PORT";

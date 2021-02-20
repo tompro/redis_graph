@@ -49,6 +49,18 @@ pub trait GraphCommands: ConnectionLike + Sized {
         cmd("GRAPH.PROFILE").arg(key).arg(query).query(self)
     }
 
+    fn graph_delete<K: ToRedisArgs>(&mut self, key: K) -> RedisResult<String> {
+        cmd("GRAPH.DELETE").arg(key).query(self)
+    }
+
+    fn graph_explain<K: ToRedisArgs, Q: ToRedisArgs, RV: FromRedisValue>(
+        &mut self,
+        key: K,
+        query: Q,
+    ) -> RedisResult<RV> {
+        cmd("GRAPH.EXPLAIN").arg(key).arg(query).query(self)
+    }
+
     fn graph_slowlog<K: ToRedisArgs>(&mut self, key: K) -> RedisResult<Vec<SlowLogEntry>> {
         cmd("GRAPH.SLOWLOG").arg(key).query(self)
     }

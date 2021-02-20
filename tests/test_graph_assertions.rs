@@ -101,3 +101,11 @@ pub fn check_graph_config_get_all(r: GraphConfig) {
     let v: i32 = r.get_value("RESULTSET_SIZE").unwrap().unwrap();
     assert_eq!(v, 500);
 }
+
+pub fn check_graph_delete_success(r: RedisResult<String>) {
+    assert!(r.unwrap().contains("Graph removed"))
+}
+
+pub fn check_graph_explain_result(r: RedisResult<Vec<String>>) {
+    assert!(r.unwrap().len() > 0);
+}

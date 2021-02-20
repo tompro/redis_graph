@@ -89,3 +89,15 @@ fn test_graph_config_get_all() {
     let res = task::block_on(issue_graph_config_get_all());
     check_graph_config_get_all(res);
 }
+
+#[test]
+fn test_graph_delete() {
+    let res = task::block_on(issue_graph_delete("test_graph_delete_std"));
+    check_graph_delete_success(res);
+}
+
+#[test]
+fn test_graph_explain() {
+    let res = task::block_on(issue_graph_explain("test_graph_explain_std"));
+    check_graph_explain_result(res);
+}

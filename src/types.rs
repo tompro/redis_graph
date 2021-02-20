@@ -73,14 +73,18 @@ pub struct RelationValue {
 /// Represents an entry returned from the GRAPH.SLOWLOG command.
 #[derive(Default, Clone, Debug)]
 pub struct SlowLogEntry {
+    /// A unix timestamp at which the log entry was processed.
     pub timestamp: u64,
+    /// The issued command.
     pub command: String,
+    /// The issued query.
     pub query: String,
+    /// The amount of time needed for its execution, in milliseconds.
     pub time: f64,
 }
 
 /// Simple wrapper around a graph config map that allows derserializing config
-/// values.
+/// values into rust types.
 #[derive(Default, Clone, Debug)]
 pub struct GraphConfig {
     pub values: HashMap<String, Value>,

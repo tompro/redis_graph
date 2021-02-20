@@ -73,6 +73,32 @@ pub trait AsyncGraphCommands: ConnectionLike + Send + Sized {
         })
     }
 
+    fn graph_delete<'a, K: ToRedisArgs + Send + Sync + 'a>(
+        &'a mut self,
+        key: K,
+    ) -> RedisFuture<String> {
+        Box::pin(async move { cmd("GRAPH.DELETE").arg(key).query_async(self).await })
+    }
+
+    fn graph_explain<
+        'a,
+        K: ToRedisArgs + Send + Sync + 'a,
+        Q: ToRedisArgs + Send + Sync + 'a,
+        RV: FromRedisValue,
+    >(
+        &'a mut self,
+        key: K,
+        query: Q,
+    ) -> RedisFuture<RV> {
+        Box::pin(async move {
+            cmd("GRAPH.EXPLAIN")
+                .arg(key)
+                .arg(query)
+                .query_async(self)
+                .await
+        })
+    }
+
     fn graph_slowlog<'a, K: ToRedisArgs + Send + Sync + 'a>(
         &'a mut self,
         key: K,

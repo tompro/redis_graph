@@ -141,6 +141,20 @@ fn test_graph_config_get_all() {
     check_graph_config_get_all(get_con().graph_config_get_all().unwrap());
 }
 
+#[test]
+fn test_graph_delete() {
+    ensure_test_data("test_graph_delete");
+    check_graph_delete_success(get_con().graph_delete("test_graph_delete"));
+}
+
+#[test]
+fn test_graph_explain() {
+    ensure_test_data("test_graph_explain");
+    check_graph_explain_result(
+        get_con().graph_explain("test_graph_explain", "MATCH (r:Rider) RETURN r"),
+    );
+}
+
 fn get_redis_url() -> String {
     let redis_host_key = "REDIS_HOST";
     let redis_host_port = "REDIS_PORT";

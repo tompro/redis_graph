@@ -1,6 +1,6 @@
 [package]
 name = "redis-graph"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["tompro <office@protom.eu>"]
 keywords = ["redis", "database", "graph"]
 description = "API for Redis graph database types."
@@ -13,7 +13,7 @@ edition = "2018"
 exclude = ["docker"]
 
 [dependencies]
-redis = { version = "0.20.0", optional = true }
+redis = { version = "^0.20.0", optional = true }
 
 [features]
 default = ['redis']

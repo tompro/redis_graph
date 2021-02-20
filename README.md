@@ -1,6 +1,6 @@
 # redis_graph
 
-[![crates.io](https://img.shields.io/badge/crates.io-v0.3.0-orange)](https://crates.io/crates/redis_graph)
+[![crates.io](https://img.shields.io/badge/crates.io-v0.4.0-orange)](https://crates.io/crates/redis_graph)
 ![Continuous integration](https://github.com/tompro/redis_graph/workflows/Continuous%20integration/badge.svg)
 
 redis-graph provides a small trait with an extension function for the
@@ -8,8 +8,8 @@ redis-graph provides a small trait with an extension function for the
 data types that can be installed as a [redis module](https://oss.redislabs.com/redisgraph). 
 Redis graph operations are mostly using two top level Redis commands
 (one for read/write operations and one for read-only operations). In addition 
-to those there are some more maintenance oriented commands for perfomance, configuration and  
-clean-up which starting from v0.4.0 are also supported.
+to those there are some more maintenance oriented commands for perfomance, 
+configuration and clean-up which starting from v0.4.0 are also supported.
 The Graph commands are available in synchronous and asynchronous versions.
 
 The crate is called `redis-graph` and you can depend on it via cargo. You will

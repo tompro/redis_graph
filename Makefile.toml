@@ -2,7 +2,7 @@
 description = "Publish to crates.io"
 dependencies = ["gh_checks"]
 command = "cargo"
-args = ["publish", "--all-features", "--dry-run"]
+args = ["publish", "--all-features"]
 
 [tasks.gh_checks]
 dependencies = [

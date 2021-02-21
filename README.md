@@ -1,6 +1,6 @@
 # redis_graph
 
-[![crates.io](https://img.shields.io/badge/crates.io-v0.4.0-orange)](https://crates.io/crates/redis_graph)
+[![crates.io](https://img.shields.io/badge/crates.io-v0.4.1-orange)](https://crates.io/crates/redis_graph)
 ![Continuous integration](https://github.com/tompro/redis_graph/workflows/Continuous%20integration/badge.svg)
 
 redis-graph provides a small trait with an extension function for the
@@ -19,7 +19,7 @@ but should run with versions higher than that.
 ```ini
 [dependencies]
 redis = "0.20.0"
-redis-graph = "0.4.0"
+redis-graph = "0.4.1"
 ```
 
 Or via git:
@@ -35,7 +35,7 @@ With async feature inherited from the [redis](https://docs.rs/redis) crate (eith
 ```ini
 [dependencies]
 redis = "0.20.0"
-redis-graph = { version = "0.4.0", features = ['tokio-comp'] }
+redis-graph = { version = "0.4.1", features = ['tokio-comp'] }
 ```
 
 ## Synchronous usage

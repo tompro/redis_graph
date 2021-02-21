@@ -14,7 +14,7 @@
 //! ```ini
 //! [dependencies]
 //! redis = "0.20.0"
-//! redis-graph = "0.4.0"
+//! redis-graph = "0.4.1"
 //! ```
 //!
 //! Or via git:
@@ -31,7 +31,7 @@
 //! ```ini
 //! [dependencies]
 //! redis = "0.20.0"
-//! redis-graph = { version = "0.4.0", features = ['tokio-comp'] }
+//! redis-graph = { version = "0.4.1", features = ['tokio-comp'] }
 //! ```
 //!
 //! # Synchronous usage

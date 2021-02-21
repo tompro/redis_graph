@@ -1,6 +1,6 @@
 [package]
 name = "redis-graph"
-version = "0.4.0"
+version = "0.4.1"
 authors = ["tompro <office@protom.eu>"]
 keywords = ["redis", "database", "graph"]
 description = "API for Redis graph database types."
@@ -32,3 +32,6 @@ required-features = ['async-std-comp']
 [[test]]
 name = "test_async_tokio_commands"
 required-features = ['tokio-comp']
+
+[package.metadata.docs.rs]
+all-features = true

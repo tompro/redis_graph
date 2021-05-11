@@ -333,9 +333,14 @@ impl FromRedisValue for SlowLogEntry {
 
 impl FromRedisValue for GraphConfig {
     fn from_redis_value(v: &Value) -> RedisResult<Self> {
-        Ok(GraphConfig {
-            values: to_property_map(v)?,
-        })
+        match v {
+            Value::Bulk(_) => Ok(GraphConfig {
+                values: to_property_map(v)?,
+            }),
+            _ => Ok(GraphConfig {
+                values: HashMap::default(),
+            }),
+        }
     }
 }
 
@@ -351,7 +356,7 @@ pub fn create_error(msg: &str) -> RedisError {
 pub fn to_property_map(v: &Value) -> RedisResult<HashMap<String, Value>> {
     let t: Vec<HashMap<String, Value>> = match from_redis_value(v) {
         Ok(v) => v,
-        _ => vec![]
+        _ => vec![],
     };
     let mut values: HashMap<String, Value> = HashMap::default();
     for pair in t {

@@ -349,7 +349,10 @@ pub fn create_error(msg: &str) -> RedisError {
 
 // Extracts a list of name value pairs from a graph result
 pub fn to_property_map(v: &Value) -> RedisResult<HashMap<String, Value>> {
-    let t: Vec<HashMap<String, Value>> = from_redis_value(v)?;
+    let t: Vec<HashMap<String, Value>> = match from_redis_value(v) {
+        Ok(v) => v,
+        _ => vec![]
+    };
     let mut values: HashMap<String, Value> = HashMap::default();
     for pair in t {
         for (key, value) in pair {

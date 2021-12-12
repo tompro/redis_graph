@@ -1,6 +1,6 @@
 # redis_graph
 
-[![crates.io](https://img.shields.io/badge/crates.io-v0.4.1-orange)](https://crates.io/crates/redis_graph)
+[![crates.io](https://img.shields.io/badge/crates.io-v0.4.2-orange)](https://crates.io/crates/redis_graph)
 ![Continuous integration](https://github.com/tompro/redis_graph/workflows/Continuous%20integration/badge.svg)
 
 redis-graph provides a small trait with an extension function for the

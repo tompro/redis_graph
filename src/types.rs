@@ -261,7 +261,7 @@ impl FromRedisValue for NodeValue {
         let values = to_property_map(v)?;
         let id: u64 = values
             .get("id")
-            .map_or(Ok(Some(0)), |v| from_redis_value(v))?
+            .map_or(Ok(Some(0)), from_redis_value)?
             .unwrap();
         let labels: Vec<String> = if values.get("labels").is_some() {
             from_redis_value(values.get("labels").unwrap())?
@@ -287,19 +287,19 @@ impl FromRedisValue for RelationValue {
         let values = to_property_map(v)?;
         let id: u64 = values
             .get("id")
-            .map_or(Ok(Some(0)), |v| from_redis_value(v))?
+            .map_or(Ok(Some(0)), from_redis_value)?
             .unwrap();
         let rel_type: String = values
             .get("type")
-            .map_or(Ok(Some("".to_string())), |v| from_redis_value(v))?
+            .map_or(Ok(Some("".to_string())), from_redis_value)?
             .unwrap();
         let src_node: u64 = values
             .get("src_node")
-            .map_or(Ok(Some(0)), |v| from_redis_value(v))?
+            .map_or(Ok(Some(0)), from_redis_value)?
             .unwrap();
         let dest_node: u64 = values
             .get("dest_node")
-            .map_or(Ok(Some(0)), |v| from_redis_value(v))?
+            .map_or(Ok(Some(0)), from_redis_value)?
             .unwrap();
         let properties: HashMap<String, Value> = if values.get("properties").is_some() {
             to_property_map(values.get("properties").unwrap())?

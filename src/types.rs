@@ -261,7 +261,7 @@ impl FromRedisValue for NodeValue {
         let values = to_property_map(v)?;
         let id: u64 = values
             .get("id")
-            .map_or(Ok(Some(0)), |v| from_redis_value(v))?
+            .map_or(Ok(Some(0)), from_redis_value)?
             .unwrap();
         let labels: Vec<String> = if values.get("labels").is_some() {
             from_redis_value(values.get("labels").unwrap())?
@@ -287,19 +287,19 @@ impl FromRedisValue for RelationValue {
         let values = to_property_map(v)?;
         let id: u64 = values
             .get("id")
-            .map_or(Ok(Some(0)), |v| from_redis_value(v))?
+            .map_or(Ok(Some(0)), from_redis_value)?
             .unwrap();
         let rel_type: String = values
             .get("type")
-            .map_or(Ok(Some("".to_string())), |v| from_redis_value(v))?
+            .map_or(Ok(Some("".to_string())), from_redis_value)?
             .unwrap();
         let src_node: u64 = values
             .get("src_node")
-            .map_or(Ok(Some(0)), |v| from_redis_value(v))?
+            .map_or(Ok(Some(0)), from_redis_value)?
             .unwrap();
         let dest_node: u64 = values
             .get("dest_node")
-            .map_or(Ok(Some(0)), |v| from_redis_value(v))?
+            .map_or(Ok(Some(0)), from_redis_value)?
             .unwrap();
         let properties: HashMap<String, Value> = if values.get("properties").is_some() {
             to_property_map(values.get("properties").unwrap())?
@@ -333,9 +333,14 @@ impl FromRedisValue for SlowLogEntry {
 
 impl FromRedisValue for GraphConfig {
     fn from_redis_value(v: &Value) -> RedisResult<Self> {
-        Ok(GraphConfig {
-            values: to_property_map(v)?,
-        })
+        match v {
+            Value::Bulk(_) => Ok(GraphConfig {
+                values: to_property_map(v)?,
+            }),
+            _ => Ok(GraphConfig {
+                values: HashMap::default(),
+            }),
+        }
     }
 }
 
@@ -349,11 +354,15 @@ pub fn create_error(msg: &str) -> RedisError {
 
 // Extracts a list of name value pairs from a graph result
 pub fn to_property_map(v: &Value) -> RedisResult<HashMap<String, Value>> {
-    let t: Vec<HashMap<String, Value>> = from_redis_value(v)?;
+    let t: Vec<Vec<Value>> = match from_redis_value(v) {
+        Ok(v) => v,
+        _ => vec![],
+    };
     let mut values: HashMap<String, Value> = HashMap::default();
     for pair in t {
-        for (key, value) in pair {
-            values.insert(key, value);
+        if pair.len() == 2 {
+            let key: String = from_redis_value(&pair[0])?;
+            values.insert(key, pair[1].clone());
         }
     }
     Ok(values)

@@ -13,13 +13,13 @@ configuration and clean-up which starting from v0.4.0 are also supported.
 The Graph commands are available in synchronous and asynchronous versions.
 
 The crate is called `redis-graph` and you can depend on it via cargo. You will
-also need redis in your dependencies. This version was tested against redis 0.20.0 
+also need redis in your dependencies. This version was tested against redis 0.21.0 
 but should run with versions higher than that.
 
 ```ini
 [dependencies]
-redis = "0.20.0"
-redis-graph = "0.4.1"
+redis = "0.21.0"
+redis-graph = "0.4.2"
 ```
 
 Or via git:
@@ -34,8 +34,8 @@ With async feature inherited from the [redis](https://docs.rs/redis) crate (eith
 
 ```ini
 [dependencies]
-redis = "0.20.0"
-redis-graph = { version = "0.4.1", features = ['tokio-comp'] }
+redis = "0.21.0"
+redis-graph = { version = "0.4.2", features = ['tokio-comp'] }
 ```
 
 ## Synchronous usage

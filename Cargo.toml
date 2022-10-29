@@ -23,7 +23,7 @@ async-std-comp = ['redis/async-std-comp']
 [dev-dependencies]
 tokio = { version = "1", features = ["rt"] }
 futures = "0.3.5"
-async-std = "1.6.0"
+async-std = "1.8.0"
 
 [[test]]
 name = "test_async_std_commands"

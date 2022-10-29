@@ -8,13 +8,13 @@
 //!The Graph commands are available in synchronous and asynchronous versions.
 //!
 //!The crate is called `redis-graph` and you can depend on it via cargo. You will
-//!also need redis in your dependencies. This version was tested against redis 0.21.0
+//!also need redis in your dependencies. This version was tested against redis 0.22.1
 //!but should run with versions higher than that.
 //!
 //! ```ini
 //! [dependencies]
-//! redis = "0.21.0"
-//! redis-graph = "0.4.2"
+//! redis = "0.22.1"
+//! redis-graph = "0.4.3"
 //! ```
 //!
 //! Or via git:
@@ -30,8 +30,8 @@
 //!
 //! ```ini
 //! [dependencies]
-//! redis = "0.21.0"
-//! redis-graph = { version = "0.4.2", features = ['tokio-comp'] }
+//! redis = "0.22.1"
+//! redis-graph = { version = "0.4.3", features = ['tokio-comp'] }
 //! ```
 //!
 //! # Synchronous usage

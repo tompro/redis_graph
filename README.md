@@ -18,8 +18,8 @@ but should run with versions higher than that.
 
 ```ini
 [dependencies]
-redis = "0.22.1"
-redis-graph = "0.4.3"
+redis = "0.23.0"
+redis-graph = "0.4.4"
 ```
 
 Or via git:
@@ -34,8 +34,8 @@ With async feature inherited from the [redis](https://docs.rs/redis) crate (eith
 
 ```ini
 [dependencies]
-redis = "0.22.1"
-redis-graph = { version = "0.4.3", features = ['tokio-comp'] }
+redis = "0.23.0"
+redis-graph = { version = "0.4.4", features = ['tokio-comp'] }
 ```
 
 ## Synchronous usage

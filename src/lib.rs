@@ -3,18 +3,18 @@
 //! data types that can be installed as a [redis module](https://oss.redislabs.com/redisgraph).
 //!Redis graph operations are mostly using two top level Redis commands
 //!(one for read/write operations and one for read-only operations). In addition
-//!to those there are some more maintenance oriented commands for perfomance, configuration and  
+//!to those there are some more maintenance oriented commands for perfomance, configuration and
 //!clean-up which starting from v0.4.0 are also supported.
 //!The Graph commands are available in synchronous and asynchronous versions.
 //!
 //!The crate is called `redis-graph` and you can depend on it via cargo. You will
-//!also need redis in your dependencies. This version was tested against redis 0.22.1
+//!also need redis in your dependencies. This version was tested against redis 0.23.0
 //!but should run with versions higher than that.
 //!
 //! ```ini
 //! [dependencies]
-//! redis = "0.22.1"
-//! redis-graph = "0.4.3"
+//! redis = "0.23.0"
+//! redis-graph = "0.4.4"
 //! ```
 //!
 //! Or via git:
@@ -31,7 +31,7 @@
 //! ```ini
 //! [dependencies]
 //! redis = "0.22.1"
-//! redis-graph = { version = "0.4.3", features = ['tokio-comp'] }
+//! redis-graph = { version = "0.4.4", features = ['tokio-comp'] }
 //! ```
 //!
 //! # Synchronous usage
@@ -42,7 +42,7 @@
 //! To also have access to the value extractor traits simply import
 //! the whole crate redis_graph::*.
 //!
-//!  
+//!
 //! ```rust,no_run
 //! # fn run() -> redis::RedisResult<()> {
 //! use redis::Commands;

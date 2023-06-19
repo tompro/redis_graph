@@ -1,6 +1,6 @@
 # redis_graph
 
-[![crates.io](https://img.shields.io/badge/crates.io-v0.4.3-orange)](https://crates.io/crates/redis_graph)
+[![crates.io](https://img.shields.io/badge/crates.io-v0.4.4-orange)](https://crates.io/crates/redis_graph)
 ![Continuous integration](https://github.com/tompro/redis_graph/workflows/Continuous%20integration/badge.svg)
 
 redis-graph provides a small trait with an extension function for the
@@ -13,7 +13,7 @@ configuration and clean-up which starting from v0.4.0 are also supported.
 The Graph commands are available in synchronous and asynchronous versions.
 
 The crate is called `redis-graph` and you can depend on it via cargo. You will
-also need redis in your dependencies. This version was tested against redis 0.21.0 
+also need redis in your dependencies. This version was tested against redis 0.23.0 
 but should run with versions higher than that.
 
 ```ini

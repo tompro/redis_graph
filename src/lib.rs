@@ -225,13 +225,13 @@
 //! let success:bool = con.graph_config_set("RESULTSET_SIZE", 500)?;
 //!
 //! /// Get a single config value.
-//! let resultSetSize:i32 = con.graph_config_get("RESULTSET_SIZE")?;
-//! assert_eq!(resultSetSize, 500);
+//! let result_set_size:i32 = con.graph_config_get("RESULTSET_SIZE")?;
+//! assert_eq!(result_set_size, 500);
 //!
 //! /// Get all config values
 //! let config: GraphConfig = con.graph_config_get_all()?;
-//! let resSize:Option<u32> = config.get_value("RESULTSET_SIZE")?;
-//! assert_eq!(resSize.unwrap(), 500);
+//! let res_size:Option<u32> = config.get_value("RESULTSET_SIZE")?;
+//! assert_eq!(res_size.unwrap(), 500);
 //!
 //! # Ok(()) }
 //! ```
